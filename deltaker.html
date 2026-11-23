@@ -55,7 +55,7 @@ function comment(m){
   const me=m.d===PID;let t=m.c||'';
   if(me) t=t.replace(/(på … |Det blir |bøyer seg for )\{N\}/g,'$1deg');
   t=t.replace(/\{N\}/g,me?'du':'en kollega');
-  return t.replace(/(^|[.!?:] )([a-zæøå])/g,(a,b,c)=>b+c.toUpperCase());
+  return t.replace(/(^|[!?:] |\D\. )([a-zæøå])/g,(a,b,c)=>b+c.toUpperCase());
 }
 function apply(m){
   const me=m.d===PID, isOut=(m.out||[]).includes(PID), W=who(m);
