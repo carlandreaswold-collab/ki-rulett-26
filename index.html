@@ -27,6 +27,22 @@ body{min-height:100vh;color:#fff;font-family:"NRK Sans","Helvetica Neue",Arial,s
 #pcom{margin-top:auto;font-size:16px;font-style:italic;padding:12px 14px;border-left:5px solid #ffd23f;background:#ffffff0d;border-radius:8px}
 #pcom small{display:block;font-style:normal;font-size:11px;opacity:.6;letter-spacing:.14em;text-transform:uppercase;margin-bottom:4px}
 @keyframes pulse{50%{transform:scale(1.03)}}
+#cardwrap{display:none;justify-content:center;margin:6px 0 10px;perspective:900px}
+#cardwrap.on{display:flex}
+.pcard{--w:min(62vw,250px);position:relative;width:var(--w);font-size:calc(var(--w)*.05);background:#f3ecd8;border-radius:.7em;padding:.55em .55em .6em;box-shadow:0 1em 2.4em #000b;color:#0a1530;text-align:center;animation:flip .9s cubic-bezier(.2,.9,.3,1.2) both}
+.pcard img{width:100%;display:block;border-radius:.35em;aspect-ratio:520/628;object-fit:cover}
+.pcard.king img{aspect-ratio:520/587}
+.pcard .cap{background:#ffd23f;border-radius:.35em;margin-top:.45em;padding:.35em .3em .3em;font-weight:900;line-height:1.05;white-space:nowrap;overflow:hidden}
+.pcard .sub2{font-size:.62em;letter-spacing:.14em;text-transform:uppercase;font-weight:800;opacity:.75;margin-top:.45em}
+.pcard.king{background:linear-gradient(135deg,#fff0a0 0%,#d9a21b 45%,#fff0a0 55%,#c8901a 100%)}
+.pcard.king .cap{background:#0a1530;color:#ffd23f}
+.pcard.king .sub2{opacity:1}
+@keyframes flip{from{transform:rotateY(90deg) scale(.4);opacity:0}to{transform:none;opacity:1}}
+#penbox{display:none;margin:4px 0 10px;padding:14px 12px;border-radius:14px;text-align:center;background:linear-gradient(160deg,#7d0d14,#c0262d);border:3px solid #ffd23f;animation:flip .6s both}
+#penbox.on{display:block}
+#penbox .ph{font-size:20px;font-weight:900;letter-spacing:.1em;color:#ffd23f}
+#penbox .pn{font-size:17px;font-weight:800;margin:4px 0 8px}
+#penbox .pt{font-size:22px;font-weight:900;line-height:1.2}
 </style>
 </head>
 <body>
@@ -34,6 +50,8 @@ body{min-height:100vh;color:#fff;font-family:"NRK Sans","Helvetica Neue",Arial,s
 <div id="pstat">Venter på start …</div>
 <div id="pq"></div>
 <div id="popts"></div>
+<div id="cardwrap"></div>
+<div id="penbox"></div>
 <div id="pbanner" class="info">Spillet har ikke startet ennå.</div>
 <div id="ppen"></div>
 <div id="pcom"><small>Kommentatoren</small><span id="pctext">Her dukker kommentatoren opp når det braker løs.</span></div>
@@ -57,6 +75,13 @@ function comment(m){
   t=t.replace(/\{N\}/g,me?'du':'en kollega');
   return t.replace(/(^|[!?:] |\D\. )([a-zæøå])/g,(a,b,c)=>b+c.toUpperCase());
 }
+const KORT=n=>`kort/k${String(n+1).padStart(2,'0')}.jpg`;
+function cardHtml(name,img,king){
+  const sc=Math.min(1,15/Math.max(1,name.length));
+  return `<div class="pcard${king?' king':''}"><img src="${king?'kort/konge.jpg':KORT(img)}" alt=""><div class="cap" style="font-size:${(king?1.45:1.7)*sc}em">${esc(name)}</div><div class="sub2">${king?'👑 Julebords-konge 2026':'Julebord 2026 · Kampen mot toppen'}</div></div>`;
+}
+let shown='';
+function setCard(key,html){if(shown===key)return;shown=key;$('cardwrap').innerHTML=html;$('cardwrap').classList.toggle('on',!!html)}
 function apply(m){
   const me=m.d===PID, isOut=(m.out||[]).includes(PID), W=who(m);
   $('ppl').textContent=m.ph==='w'?'👑':`${m.place}. plass`;
@@ -73,8 +98,14 @@ function apply(m){
   else if(m.ph==='r'){st='Fasit';bn=m.ok?(me?(T?'KLARTE DEN! Du er helten 🎉':'RIKTIG! Du er helten 🎉'):`${Cap(W)} ${T?'klarte oppgaven':'svarte riktig'} ✅`):(me?(T?'SVIKTET! 💥 Du er ute':'FEIL! 💥 Du er ute'):`${Cap(W)} ${T?'klarte ikke oppgaven':'svarte feil'} ❌`);bc=m.ok?'good':'bad';
     if(me&&!m.ok&&m.pen){try{localStorage.setItem('jb26pen'+PID,m.pen)}catch(e){}}}
   else if(m.ph==='w'){st='Vi er på toppen!';bn=me?'DET ER DEG! Du er årets julebords-konge 👑':'Vi har en julebords-konge! 👑 Se storskjermen';bc=me?'turn':'good'}
+  if((m.ph==='d'||m.ph==='r')&&m.nm&&m.ci!==undefined)setCard(m.ph==='d'||m.ph==='r'?'c'+m.nm+m.ci:'',cardHtml(m.nm,m.ci));
+  else if(m.ph==='w'&&m.nm)setCard('k'+m.nm,cardHtml(m.nm,0,true));
+  else if(m.ph==='q'||m.ph==='s')setCard('',''); 
+  const pb=$('penbox');
+  if(m.ph==='r'&&!m.ok&&m.nm&&m.pen){pb.innerHTML=`<div class="ph">${T?'SVIKTET!':'FEIL!'} 💥</div><div class="pn">${esc(m.nm)}</div><div class="pt">${esc(m.pen)}</div>`;pb.className='on'}
+  else pb.className='';
   $('pstat').textContent=st;$('pbanner').textContent=bn;$('pbanner').className=bc;
-  $('ppen').textContent=(isOut||(me&&m.ph==='r'&&!m.ok))?(m.ph==='r'&&me&&!m.ok?m.pen:mine()):'';
+  $('ppen').textContent=(isOut&&!(m.ph==='r'&&!m.ok&&m.nm&&m.pen))?mine():'';
   if(m.c)$('pctext').textContent=comment(m);
 }
 window.__apply=apply;
