@@ -161,6 +161,13 @@
   .goal .keeper{position:absolute;bottom:0;font-size:4vw;transform:translateX(-50%)}
   .goal .aim{position:absolute;top:30%;font-size:3.4vw;transform:translateX(-50%)}
   .tgood{outline:.5vw solid #7dffb0;outline-offset:.5vw}.tbad{outline:.5vw solid #ff6b6b;outline-offset:.5vw}
+  /* forside: skaler etter både bredde og høyde, så alt får plass i lave vinduer */
+  #s-intro{padding:2vh 5vw}
+  #s-intro h1{font-size:min(8vw,12vh)}
+  #s-intro .sub{font-size:min(2.5vw,3.4vh);margin-top:1.2vh}
+  #s-intro .rules{font-size:min(2.2vw,3vh);margin-top:2vh;line-height:1.4}
+  #s-intro #start{font-size:min(2.6vw,4.2vh);margin-top:2.2vh;padding:1.2vh 3vw}
+  #s-intro button.ghost{font-size:min(1.3vw,2.2vh)}
 </style>
 </head>
 <body>
@@ -225,7 +232,7 @@
     <div class="step s1"><div id="kcard"></div><div class="blk"><span>1</span><small>JULEBORDS-KONGE</small></div></div>
     <div class="step s3"><div class="who" id="w3"></div><div class="blk"><span>3</span></div></div>
   </div>
-  <button class="ghost" id="home2" style="position:absolute;bottom:2vh;right:2vw;z-index:5">↩ Tilbake til start</button>
+  <button class="ghost" id="home2" style="position:absolute;top:1.5vh;right:1.5vw;z-index:5">↩ Tilbake til start</button>
   <div class="prize"><small>🏆 Kongens premie</small><b>En times prat om KI med Hans Henrik</b><span>på julebordet i kveld</span></div>
 </div>
 
