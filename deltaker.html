@@ -113,6 +113,12 @@ function apply(m){
 window.__apply=apply;
 if(!TEST&&!isNaN(PID)){
   let last=0;
+  // hent siste status med en gang, slik at de som åpner siden midt i en runde ser noe
+  fetch(NTFY+'/json?poll=1&since=3h').then(r=>r.text()).then(t=>{
+    let lm=null;
+    t.split('\n').forEach(l=>{try{const d=JSON.parse(l);if(d.event&&d.event!=='message')return;const m=JSON.parse(d.message);if(!lm||m.t>=lm.t)lm=m}catch(x){}});
+    if(lm&&lm.t>=last){last=lm.t;apply(lm)}
+  }).catch(()=>{});
   const es=new EventSource(NTFY+'/sse?since=latest');
   es.onmessage=e=>{try{const d=JSON.parse(e.data);if(d.event&&d.event!=='message')return;const m=JSON.parse(d.message);if(m.t>=last){last=m.t;apply(m)}}catch(x){}};
   es.onerror=()=>{if($('pbanner').textContent.startsWith('Spillet har'))$('pbanner').textContent='Kobler til …'};
