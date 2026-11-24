@@ -168,6 +168,11 @@
   #s-intro .rules{font-size:min(2.2vw,3vh);margin-top:2vh;line-height:1.4}
   #s-intro #start{font-size:min(2.6vw,4.2vh);margin-top:2.2vh;padding:1.2vh 3vw}
   #s-intro button.ghost{font-size:min(1.3vw,2.2vh)}
+  #s-intro #rules{display:none;position:absolute;z-index:5;left:7vw;right:7vw;top:50%;transform:translateY(-50%);max-width:none;margin:0;padding:3vh 3vw;background:#0a1530fc;border:.4vh solid #ffd23f;border-radius:2vh;box-shadow:0 0 6vh #000c;cursor:pointer}
+  #s-intro #rules.on{display:block}
+  #rules .rtitle{font-size:1.25em;font-weight:800;color:#ffd23f;margin-bottom:1.2vh}
+  #rules .rtitle small{font-size:.5em;font-weight:400;color:#fff9}
+  #rules div+div{margin-top:.6vh}
 </style>
 </head>
 <body>
@@ -176,16 +181,17 @@
 <div class="screen on" id="s-intro">
   <h1>Julebord-<span>rulett</span></h1>
   <div class="sub">Sportsquiz for hele salen – bare <b>én</b> om gangen må svare, men alle sitter i samme båt.</div>
-  <div class="rules">
+  <div class="rules" id="rules"><div class="rtitle">📜 Reglene <small>(klikk for å lukke)</small></div>
     <div>🏁 <b>Hele salen er ett lag</b> – og vi starter på <b>5. plass</b>. Målet er toppen av pallen.</div>
     <div>❓ Et sportsspørsmål vises for alle. Så trekkes <b>én tilfeldig person</b> som må svare.</div>
     <div>⌨️ Innimellom kommer en <b>praktisk oppgave</b> i stedet – skrivetest, refleks, tidsfølelse. Den trukne må på tastaturet.</div>
     <div>✅ Klarer du det: vi <b>rykker én plass opp</b>.</div>
     <div>❌ Feil: vi <b>faller én plass ned</b> – og du får en <b>straff</b> for kvelden (bare på tull).</div>
-    <div>👑 Den som svarer riktig når vi ligger på <b>2. plass</b>, tar oss til topps og blir <b>årets julebords-konge</b> – og vinner <b>en times prat om KI med Hans Henrik</b>.</div>
+    <div>👑 Den som svarer riktig når vi ligger på <b>2. plass</b>, tar oss til topps og blir <b>årets julebords-konge</b>.</div>
   </div>
   <button id="start">Start kampen mot toppen</button>
-  <div style="margin-top:2vh"><button class="ghost" id="tApp">🔊 Test applaus</button><button class="ghost" id="tBoo">🔊 Test buing</button><button class="ghost" id="tGro">🔊 Test stønn</button></div>
+  <div style="margin-top:2.4vh"><button class="ghost" id="rulesBtn">📜 Regler (R)</button></div>
+  <div style="margin-top:1.4vh"><button class="ghost" id="tApp">🔊 Test applaus</button><button class="ghost" id="tBoo">🔊 Test buing</button><button class="ghost" id="tGro">🔊 Test stønn</button></div>
 </div>
 
 <div class="screen" id="s-play">
@@ -679,6 +685,8 @@ function startHost(){
     show('s-play');clockT=setInterval(clock,500);clock();newQuestion();state='idle'};
   $('draw').onclick=nextQ;
   bgStart();
+  const rl=()=>$('rules').classList.toggle('on');
+  $('rulesBtn').onclick=rl;$('rules').onclick=()=>$('rules').classList.remove('on');
   $('tasks').onclick=()=>{TASKS_ON=!TASKS_ON;$('tasks').textContent='Oppgaver: '+(TASKS_ON?'PÅ':'AV')+' (T)'};
   $('tApp').onclick=()=>playSfx('win');$('tBoo').onclick=()=>playSfx('boo');$('tGro').onclick=()=>playSfx('groan');
   $('mute').onclick=()=>{MUTED=!MUTED;$('mute').textContent='Lyd: '+(MUTED?'AV':'PÅ')+' (M)'};
@@ -708,6 +716,7 @@ function startHost(){
       if(k==='m')$('mute').click();
       if(k==='t')$('tasks').click();
     }
+    if($('s-intro').classList.contains('on')){if(e.key==='r'||e.key==='R')rl();if(e.key==='Escape')$('rules').classList.remove('on')}
     if(e.key==='f'||e.key==='F')$('fs').click();
   });
 }
