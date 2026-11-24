@@ -202,6 +202,7 @@
         <button class="ghost" id="tasks">Oppgaver: PÅ (T)</button>
     <button class="ghost" id="mute">Lyd: PÅ (M)</button>
     <button class="ghost" id="fs">Fullskjerm (F)</button>
+    <button class="ghost" id="home">↩ Tilbake til start</button>
   </div>
 </div>
 
@@ -224,6 +225,7 @@
     <div class="step s1"><div id="kcard"></div><div class="blk"><span>1</span><small>JULEBORDS-KONGE</small></div></div>
     <div class="step s3"><div class="who" id="w3"></div><div class="blk"><span>3</span></div></div>
   </div>
+  <button class="ghost" id="home2" style="position:absolute;bottom:2vh;right:2vw;z-index:5">↩ Tilbake til start</button>
   <div class="prize"><small>🏆 Kongens premie</small><b>En times prat om KI med Hans Henrik</b><span>på julebordet i kveld</span></div>
 </div>
 
@@ -674,6 +676,14 @@ function startHost(){
   $('tApp').onclick=()=>playSfx('win');$('tBoo').onclick=()=>playSfx('boo');$('tGro').onclick=()=>playSfx('groan');
   $('mute').onclick=()=>{MUTED=!MUTED;$('mute').textContent='Lyd: '+(MUTED?'AV':'PÅ')+' (M)'};
   $('bA').onclick=()=>answer(0);$('bB').onclick=()=>answer(1);$('bC').onclick=()=>answer(2);$('skip').onclick=skip;
+  const toStart=()=>{
+    if(!confirm('Tilbake til start? Spillet nullstilles og mobilene går tilbake til «Venter på start».'))return;
+    if(TEST){location.reload();return}
+    let go=false;const reload=()=>{if(!go){go=true;location.reload()}};
+    try{fetch(NTFY,{method:'POST',body:JSON.stringify({t:Date.now(),ph:'i',place:START,out:[],q:'',o:[],k:'q'})}).then(reload,reload)}catch(e){reload()}
+    setTimeout(reload,1500);
+  };
+  $('home').onclick=toStart;$('home2').onclick=toStart;
   $('fs').onclick=()=>document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();
   addEventListener('keydown',e=>{
     if($('s-play').classList.contains('on')&&(state==='task'||state==='taskcd')){

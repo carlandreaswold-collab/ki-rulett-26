@@ -99,10 +99,11 @@ function apply(m){
   else if(m.ph==='d'){st=me?'':'Trukket';bn=me?(T?'DIN TUR! Kom frem til tastaturet ⌨️':'DIN TUR! Svar til dommeren 🎤'):`${Cap(W)} ${T?'tar oppgaven':'svarer nå'}`;bc=me?'turn':'info';if(me&&navigator.vibrate)navigator.vibrate([300,100,300])}
   else if(m.ph==='r'){st='Fasit';bn=m.ok?(me?(T?'KLARTE DEN! Du er helten 🎉':'RIKTIG! Du er helten 🎉'):`${Cap(W)} ${T?'klarte oppgaven':'svarte riktig'} ✅`):(me?(T?'SVIKTET! 💥 Du er ute':'FEIL! 💥 Du er ute'):`${Cap(W)} ${T?'klarte ikke oppgaven':'svarte feil'} ❌`);bc=m.ok?'good':'bad';
     if(me&&!m.ok&&m.pen){try{localStorage.setItem('jb26pen'+PID,m.pen)}catch(e){}}}
+  else if(m.ph==='i'){st='Venter på start …';bn='Spillet har ikke startet ennå.';try{localStorage.removeItem('jb26pen'+PID)}catch(e){}}
   else if(m.ph==='w'){st='Vi er på toppen!';bn=me?'DET ER DEG! Du er årets julebords-konge 👑':'Vi har en julebords-konge! 👑 Se storskjermen';bc=me?'turn':'good'}
   if((m.ph==='d'||m.ph==='r')&&m.nm&&m.ci!==undefined)setCard(m.ph==='d'||m.ph==='r'?'c'+m.nm+m.ci:'',cardHtml(m.nm,m.ci));
   else if(m.ph==='w'&&m.nm)setCard('k'+m.nm,cardHtml(m.nm,0,true));
-  else if(m.ph==='q'||m.ph==='s')setCard('',''); 
+  else if(m.ph==='q'||m.ph==='s'||m.ph==='i')setCard('',''); 
   const pb=$('penbox');
   if(m.ph==='r'&&!m.ok&&m.nm&&m.pen){pb.innerHTML=`<div class="ph">${T?'SVIKTET!':'FEIL!'} 💥</div><div class="pn">${esc(m.nm)}</div><div class="pt">${esc(m.pen)}</div>`;pb.className='on'}
   else pb.className='';
